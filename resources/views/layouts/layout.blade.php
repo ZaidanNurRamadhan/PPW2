@@ -22,7 +22,7 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-primary">
         <div class="container">
-            <a class="navbar-brand fw-semibold" href="{{ URL('/') }}">Perpustakaan</a>
+            <a class="navbar-brand fw-semibold fs-2">Daftar Buku</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -30,10 +30,10 @@
                 <ul class="navbar-nav ms-auto">
                     @guest
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
+                        <a class="nav-link {{ request()->is('login') ? 'active' : '' }} fs-2 mx-3" href="{{ route('login') }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('register') ? 'active' : '' }}" href="{{ route('register') }}">Register</a>
+                        <a class="nav-link {{ request()->is('register') ? 'active' : '' }} fs-2 mx-3" href="{{ route('register') }}">Register</a>
                     </li>
                     @else
                     <li class="nav-item dropdown">
@@ -60,7 +60,7 @@
     </div>
 
     {{-- Footer --}}
-    <footer class="bg-black text-white text-center p-3">
+    <footer class="bg-secondary text-white text-center p-3">
         &copy; 2024 Perpustakaan
     </footer>
 

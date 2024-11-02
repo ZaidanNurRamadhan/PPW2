@@ -15,6 +15,11 @@ use App\Models\Book;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+use App\Http\Controllers\SendEmailController;
+
+Route::get('/send-mail', [SendEmailController::class,
+'index'])->name('kirim-email');
+Route::post('/post-email', [SendEmailController::class, 'store'])->name('post-email');
 
 Route::get('/', function () {
     return view('welcome');

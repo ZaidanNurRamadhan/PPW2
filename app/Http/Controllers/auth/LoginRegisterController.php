@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User; // Assuming you are using the User model
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendMailJob;
 
 class LoginRegisterController extends Controller
 {
@@ -36,32 +38,41 @@ class LoginRegisterController extends Controller
     * @return \Illuminate\Http\Response
     */
     public function store(Request $request)
-    {
-        // Validate the request data
-        $request->validate([
-            'name' => 'required|string|max:250',
-            'email' => 'required|email|max:250|unique:users',
-            'password' => 'required|min:8|confirmed',
-        ]);
+{
+    // Validasi data
+    $request->validate([
+        'name' => 'required|string|max:250',
+        'email' => 'required|email|max:250|unique:users',
+        'password' => 'required|min:8|confirmed',
+    ]);
 
-        // Create a new user
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'email_verified_at'=> now()
-        ]);
+    // Buat pengguna baru
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'email_verified_at' => now()
+    ]);
 
-        // Log the user in after registration
-        $credentials = $request->only('email', 'password');
-        Auth::attempt($credentials);
+    // Login pengguna setelah registrasi
+    Auth::attempt($request->only('email', 'password'));
 
-        // Regenerate session
-        $request->session()->regenerate();
+    // Regenerasi session dan token CSRF
+    $request->session()->regenerate();
 
-        // Redirect to dashboard with success message
-        return redirect('/book')->with('login', 'You have successfully registered & logged in!');
-    }
+    // Dispatch email job (Jika perlu)
+    $emailData = [
+        'email' => $user->email,
+        'name' => $user->name,
+        'subject' => 'Selamat Datang di Platform Kami!',
+        'message' => 'Halo ' . $user->name . ', terima kasih telah mendaftar di platform kami.'
+    ];
+    dispatch(new SendMailJob($emailData));
+
+    // Redirect ke halaman tujuan dengan pesan sukses
+    return redirect('/book')->with('login', 'Anda telah berhasil mendaftar & masuk!');
+}
+
 
     /**
     * Display a login form.

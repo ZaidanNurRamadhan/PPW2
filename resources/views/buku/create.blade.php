@@ -16,7 +16,7 @@
     <div class="position-absolute top-50 start-50 translate-middle">
         <div class="rounded border border-success p-4 mb-2 border-opacity-50">
             <h4 class="fw-bold">Tambah Buku</h4>
-            <form action="{{ route('book.store') }}" method="POST">
+            <form action="{{ route('book.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="my-4">
                     <div class="d-flex flex-column input my-3">

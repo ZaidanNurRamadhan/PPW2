@@ -26,6 +26,8 @@ Route::get('/', function () {
 });
 
 Route::resource('book', BookController::class);
+Route::get('/users', [LoginRegisterController::class, 'users'])->name('users')->middleware('auth');
+Route::post('/user/update-photo', [LoginRegisterController::class, 'updatePhoto'])->name('update.photo');
 
 
 Route::controller(LoginRegisterController::class)->group(function() {

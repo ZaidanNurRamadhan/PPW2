@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User; // Assuming you are using the User model
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendMailJob;
+use App\Models\Book;
 
 class LoginRegisterController extends Controller
 {
@@ -17,10 +17,17 @@ class LoginRegisterController extends Controller
     */
     public function __construct()
     {
-        $this->middleware('guest')->except(['logout', 'dashboard']);
+        $this->middleware('guest')->only(['login', 'register','store']);
+        $this->middleware('auth.custom')->only(['logout','dashboard','users','updatePhoto']);
     }
 
 
+    public function dashboard(){
+        $jumlahBuku = Book::count();
+        $totalPrice = Book::sum('price');
+        $data_book = Book::all();
+        return view('buku.index', compact('data_book', 'jumlahBuku', 'totalPrice'));
+    }
     /**
     * Display a registration form.
     *
@@ -44,13 +51,21 @@ class LoginRegisterController extends Controller
         'name' => 'required|string|max:250',
         'email' => 'required|email|max:250|unique:users',
         'password' => 'required|min:8|confirmed',
+        'photo' => 'nullable|image|max:1999'
     ]);
+
+    $filenameWithExt = $request->file('photo')->getClientOriginalName();
+    $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+    $extension = $request->file('photo')->getClientOriginalExtension();
+    $filenameSimpan = $filename . '_' . time() . '.' . $extension;
+    $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
 
     // Buat pengguna baru
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'photo' => $path,
         'email_verified_at' => now()
     ]);
 
@@ -104,7 +119,7 @@ class LoginRegisterController extends Controller
             $request->session()->regenerate();
 
             // Redirect to dashboard with success message
-            return redirect('/book')->with('login', 'You have successfully logged in!');
+            return redirect()->route('dashboard')->with('login', 'You have successfully logged in!');
         }
 
         // If authentication fails, return error
@@ -113,25 +128,7 @@ class LoginRegisterController extends Controller
         ])->onlyInput('email');
     }
 
-    /**
-    * Display the dashboard to authenticated users.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    // public function dashboard()
-    // {
-    //     if (Auth::check()) {
-    //         return redirect()->route('dashboard')->with('login', 'You have successfully logged in!');
-    //     }
-
-    //     return redirect()->route('dashboard')
-    //         ->withErrors([
-    //             'email' => 'Please login to access the dashboard.',
-    //         ])->onlyInput('email');
-    // }
-
-    /**
-    * Log out the user from the application.
+    /** 
     *
     * @param \Illuminate\Http\Request $request
     * @return \Illuminate\Http\Response
@@ -149,4 +146,31 @@ class LoginRegisterController extends Controller
         // Redirect to login with success message
         return redirect('/book')->with('logout', 'You have successfully logged out!');;
     }
+
+    public function users(){
+        $user = Auth::user();
+        return view('buku.users',compact('user'));
+    }
+
+    public function updatePhoto(Request $request)
+{
+    $request->validate([
+        'photo' => 'nullable|image|max:1999',
+    ]);
+
+    $user = Auth::user();
+
+    if ($request->hasFile('photo')) {
+        $filenameWithExt = $request->file('photo')->getClientOriginalName();
+        $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+        $extension = $request->file('photo')->getClientOriginalExtension();
+        $filenameSimpan = $filename . '_' . time() . '.' . $extension;
+        $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
+
+        $user->update(['photo' => $path]);
+    }
+
+    return redirect()->route('users')->with('success', 'Foto berhasil diperbarui!');
+}
+
 }

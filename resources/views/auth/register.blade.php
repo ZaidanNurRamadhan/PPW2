@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-header fs-2 bg-info">Register</div>
             <div class="card-body">
-                <form action="{{ route('store') }}" method="post" class="form p-5">
+                <form action="{{ route('store') }}" method="post" class="form p-5" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-3 d-flex justify-content-between">
@@ -15,6 +15,16 @@
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}">
                             @if ($errors->has('name'))
                                 <span class="text-danger">{{ $errors->first('name') }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-flex justify-content-between">
+                        <label for="photo" class="fs-5">Photo</label>
+                        <div class="w-75">
+                            <input class="form-control @error('photo') is-invalid @enderror" id="photo" type="file"  name="photo" alue="{{ old('photo') }}">
+                            @if ($errors->has('photo'))
+                                <span class="text-danger">{{ $errors->first('photo') }}</span>
                             @endif
                         </div>
                     </div>

@@ -10,7 +10,7 @@ class BookController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index']);
+        $this->middleware('auth.custom')->except(['index']);
     }
 
     // table pages
@@ -78,5 +78,9 @@ class BookController extends Controller
         $book->save();
 
         return redirect('/book')->with('updated', 'Data buku berhasil diperbarui');
+    }
+
+    public function users(){
+        return view('buku.users');
     }
 }

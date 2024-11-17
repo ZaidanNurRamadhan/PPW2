@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendMailJob;
 use App\Models\Book;
+use App\Models\User;
 
 class LoginRegisterController extends Controller
 {
@@ -51,21 +52,27 @@ class LoginRegisterController extends Controller
         'name' => 'required|string|max:250',
         'email' => 'required|email|max:250|unique:users',
         'password' => 'required|min:8|confirmed',
-        'photo' => 'nullable|image|max:1999'
+        'photo' => 'nullable|image|max:1999',  // Photo is nullable
     ]);
 
-    $filenameWithExt = $request->file('photo')->getClientOriginalName();
-    $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-    $extension = $request->file('photo')->getClientOriginalExtension();
-    $filenameSimpan = $filename . '_' . time() . '.' . $extension;
-    $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
+    // Initialize the photo path
+    $photoPath = null;
+
+    // Check if a photo was uploaded
+    if ($request->hasFile('photo')) {
+        $filenameWithExt = $request->file('photo')->getClientOriginalName();
+        $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+        $extension = $request->file('photo')->getClientOriginalExtension();
+        $filenameSimpan = $filename . '_' . time() . '.' . $extension;
+        $photoPath = $request->file('photo')->storeAs('photos', $filenameSimpan);
+    }
 
     // Buat pengguna baru
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        'photo' => $path,
+        'photo' => $photoPath, // Store the photo path or null
         'email_verified_at' => now()
     ]);
 
@@ -87,6 +94,7 @@ class LoginRegisterController extends Controller
     // Redirect ke halaman tujuan dengan pesan sukses
     return redirect('/book')->with('login', 'Anda telah berhasil mendaftar & masuk!');
 }
+
 
 
     /**
@@ -128,7 +136,7 @@ class LoginRegisterController extends Controller
         ])->onlyInput('email');
     }
 
-    /** 
+    /**
     *
     * @param \Illuminate\Http\Request $request
     * @return \Illuminate\Http\Response

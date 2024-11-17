@@ -39,3 +39,6 @@ Route::controller(LoginRegisterController::class)->group(function() {
     Route::post('/logout', 'logout')->name('logout');
 });
 
+use App\Http\Controllers\GalleryController;
+Route::resource('gallery', GalleryController::class);
+

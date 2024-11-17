@@ -22,7 +22,7 @@
                     <div class="mb-3 d-flex justify-content-between">
                         <label for="photo" class="fs-5">Photo</label>
                         <div class="w-75">
-                            <input class="form-control @error('photo') is-invalid @enderror" id="photo" type="file"  name="photo" alue="{{ old('photo') }}">
+                            <input class="form-control @error('photo') is-invalid @enderror" id="photo" type="file"  name="photo" value="{{ old('photo') }}">
                             @if ($errors->has('photo'))
                                 <span class="text-danger">{{ $errors->first('photo') }}</span>
                             @endif

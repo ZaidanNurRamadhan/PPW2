@@ -19,6 +19,7 @@
             flex: 1;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-primary">
@@ -45,10 +46,15 @@
                             <li>
                                 <a class="dropdown-item" href="{{route('users')}}">Profile</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ (request()->is('gallery')) ? 'active' : '' }}" href="{{
+                            <li>
+                                <a class="dropdown-item {{ (request()->is('gallery')) ? 'active' : '' }}" href="{{
                                route('gallery.index') }}">Gallery</a>
-                               </li>
+                            </li>
+                            <li>
+                                <a href="{{route('books.index')}}" class="dropdown-item">
+                                    TableAPI
+                                </a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

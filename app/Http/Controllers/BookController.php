@@ -19,6 +19,8 @@ class BookController extends Controller
         $jumlahBuku = Book::count();
         $totalPrice = Book::sum('price');
         $data_book = Book::all();
+
+
         return view('buku.index', compact('data_book', 'jumlahBuku', 'totalPrice'));
     }
 
@@ -82,5 +84,9 @@ class BookController extends Controller
 
     public function users(){
         return view('buku.users');
+    }
+
+    public function api(){
+        return view('api.table');
     }
 }

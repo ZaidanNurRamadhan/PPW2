@@ -42,3 +42,4 @@ Route::controller(LoginRegisterController::class)->group(function() {
 use App\Http\Controllers\GalleryController;
 Route::resource('gallery', GalleryController::class);
 
+Route::get('/product', [BookController::class, 'api'])->name('book.index');
